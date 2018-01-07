@@ -25,5 +25,5 @@ Basic example:
 		app.Endpoint(endpoint)
 		app.Run(":8080")
 	}
- */
+*/
 package binder

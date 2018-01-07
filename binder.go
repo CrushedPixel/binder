@@ -1,14 +1,14 @@
 package binder
 
 import (
-	"reflect"
-	"github.com/gin-gonic/gin/binding"
-	"io"
-	"gopkg.in/go-playground/validator.v8"
 	"errors"
-	"github.com/gin-gonic/gin"
-	"net/http"
 	"github.com/crushedpixel/margo"
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"gopkg.in/go-playground/validator.v8"
+	"io"
+	"net/http"
+	"reflect"
 )
 
 const (
@@ -47,27 +47,27 @@ func NewBindingEndpoint(method string, path string, handlers ...margo.HandlerFun
 }
 
 // GET returns a new GET BindingEndpoint for a path and at least one HandlerFunc.
-func GET(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+func GET(path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
 	return NewBindingEndpoint(http.MethodGet, path, handlers...)
 }
 
 // POST returns a new POST BindingEndpoint for a path and at least one HandlerFunc.
-func POST(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+func POST(path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
 	return NewBindingEndpoint(http.MethodPost, path, handlers...)
 }
 
 // PUT returns a new PUT BindingEndpoint for a path and at least one HandlerFunc.
-func PUT(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+func PUT(path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
 	return NewBindingEndpoint(http.MethodPut, path, handlers...)
 }
 
 // PATCH returns a new PATCH BindingEndpoint for a path and at least one HandlerFunc.
-func PATCH(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+func PATCH(path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
 	return NewBindingEndpoint(http.MethodPatch, path, handlers...)
 }
 
 // DELETE returns a new DELETE BindingEndpoint for a path and at least one HandlerFunc.
-func DELETE(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+func DELETE(path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
 	return NewBindingEndpoint(http.MethodDelete, path, handlers...)
 }
 
