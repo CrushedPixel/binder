@@ -1,4 +1,4 @@
-// Package binder provides query parameter binding for the web framework margo.
+// Package binder provides request parameter binding for the web framework margo.
 package binder
 
 import (
