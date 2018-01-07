@@ -1,4 +1,3 @@
-// Package binder provides request parameter binding for the web framework margo.
 package binder
 
 import (
@@ -41,10 +40,35 @@ type BindingEndpoint struct {
 // with at least one HandlerFunc to be executed when the Endpoint is called.
 //
 // Panics if no HandlerFunc is provided.
-func (e *BindingEndpoint) NewBindingEndpoint(method string, path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
+func NewBindingEndpoint(method string, path string, handlers ...margo.HandlerFunc) *BindingEndpoint {
 	return &BindingEndpoint{
 		Endpoint: margo.NewEndpoint(method, path, handlers...),
 	}
+}
+
+// GET returns a new GET BindingEndpoint for a path and at least one HandlerFunc.
+func GET(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+	return NewBindingEndpoint(http.MethodGet, path, handlers...)
+}
+
+// POST returns a new POST BindingEndpoint for a path and at least one HandlerFunc.
+func POST(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+	return NewBindingEndpoint(http.MethodPost, path, handlers...)
+}
+
+// PUT returns a new PUT BindingEndpoint for a path and at least one HandlerFunc.
+func PUT(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+	return NewBindingEndpoint(http.MethodPut, path, handlers...)
+}
+
+// PATCH returns a new PATCH BindingEndpoint for a path and at least one HandlerFunc.
+func PATCH(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+	return NewBindingEndpoint(http.MethodPatch, path, handlers...)
+}
+
+// DELETE returns a new DELETE BindingEndpoint for a path and at least one HandlerFunc.
+func DELETE(path string, handlers ...margo.HandlerFunc) (*BindingEndpoint) {
+	return NewBindingEndpoint(http.MethodDelete, path, handlers...)
 }
 
 func (e *BindingEndpoint) Handlers() margo.HandlerChain {
