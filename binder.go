@@ -78,7 +78,7 @@ func (e *BindingEndpoint) Handlers() margo.HandlerChain {
 		middleware = append(middleware, bindingMiddleware(e.queryParamsType, queryParamsKey, binding.Query))
 	}
 	if e.bodyParamsType != nil {
-		middleware = append(middleware, bindingMiddleware(e.queryParamsType, bodyParamsKey, binding.JSON))
+		middleware = append(middleware, bindingMiddleware(e.bodyParamsType, bodyParamsKey, binding.JSON))
 	}
 	// prepend binding middleware to handlers
 	return margo.HandlerChain(append(middleware, e.Endpoint.Handlers()...))
@@ -89,7 +89,7 @@ func (e *BindingEndpoint) Handlers() margo.HandlerChain {
 // used when binding.
 // For more information on model definition, refer to https://github.com/gin-gonic/gin#model-binding-and-validation.
 //
-// The parsed query parameters can be retrieved from the Context in a HandlerFunc using Context.QueryParams().
+// The parsed query parameters can be retrieved from the Context in a HandlerFunc using binder.QueryParams(context).
 //
 // If model is nil, query parameters are not parsed and validated.
 // Panics if model is not a struct instance.
@@ -113,7 +113,7 @@ func (e *BindingEndpoint) SetQueryParamsModel(model interface{}) *BindingEndpoin
 // used when binding.
 // For more information on model definition, refer to https://github.com/gin-gonic/gin#model-binding-and-validation.
 //
-// The parsed query parameters can be retrieved from the Context in a HandlerFunc using Context.BodyParams().
+// The parsed query parameters can be retrieved from the Context in a HandlerFunc using binder.BodyParams(context).
 //
 // If model is nil, query parameters are not parsed and validated.
 // Panics if model is not a struct instance.
@@ -121,13 +121,13 @@ func (e *BindingEndpoint) SetQueryParamsModel(model interface{}) *BindingEndpoin
 // Returns self to allow for method chaining.
 func (e *BindingEndpoint) SetBodyParamsModel(model interface{}) *BindingEndpoint {
 	if model == nil {
-		e.queryParamsType = nil
+		e.bodyParamsType = nil
 	} else {
 		typ := reflect.TypeOf(model)
 		if typ.Kind() != reflect.Struct {
-			panic(errors.New("query parameter model type must be a struct type"))
+			panic(errors.New("body parameter model type must be a struct type"))
 		}
-		e.queryParamsType = typ
+		e.bodyParamsType = typ
 	}
 	return e
 }
