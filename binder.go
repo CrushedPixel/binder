@@ -1,6 +1,7 @@
 package binder
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/crushedpixel/margo"
 	"github.com/gin-gonic/gin"
@@ -146,22 +147,7 @@ func bindingMiddleware(typ reflect.Type, key string, defaultBinding binding.Bind
 		}
 
 		if err := c.ShouldBindWith(instance, b); err != nil {
-			var errs []*bindingError
-
-			// ValidationErrors is a map[string]*FieldError
-			if ve, ok := err.(validator.ValidationErrors); ok {
-				for _, val := range ve {
-					errs = append(errs, newBindingError(val.Name, val.ActualTag))
-				}
-			} else {
-				if err == io.EOF {
-					errs = append(errs, newBindingError("", ""))
-				} else {
-					panic(err)
-				}
-			}
-
-			return newErrorResponse(http.StatusBadRequest, errs...)
+			return NewErrorResponse(err)
 		}
 
 		c.Set(key, instance)
@@ -169,10 +155,33 @@ func bindingMiddleware(typ reflect.Type, key string, defaultBinding binding.Bind
 	}
 }
 
+// NewErrorResponse returns a margo.Response based on a binding error.
+func NewErrorResponse(err error) margo.Response {
+	var errs []*bindingError
+
+	if ve, ok := err.(validator.ValidationErrors); ok {
+		// ValidationErrors is a map[string]*FieldError
+		for _, val := range ve {
+			errs = append(errs, newBindingError(val.Name, val.ActualTag))
+		}
+	} else if ute, ok := err.(*json.UnmarshalTypeError); ok {
+		// user sent wrong type
+		errs = append(errs, newBindingError(ute.Field, "type"))
+	} else {
+		if err == io.EOF {
+			errs = append(errs, newBindingError("", "missing payload"))
+		} else {
+			panic(err)
+		}
+	}
+
+	return newErrorResponse(http.StatusBadRequest, errs...)
+}
+
 // bindingError is a struct type used internally to
 // represent binding errors for the user.
 type bindingError struct {
-	Status int
+	Status int    `json:"-"`
 	Field  string `json:"field"`
 	Detail string `json:"detail"`
 }
