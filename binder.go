@@ -159,15 +159,18 @@ func bindingMiddleware(typ reflect.Type, key string, defaultBinding binding.Bind
 func NewErrorResponse(err error) margo.Response {
 	var errs []*bindingError
 
-	if ve, ok := err.(validator.ValidationErrors); ok {
+	switch e := err.(type) {
+	case validator.ValidationErrors:
 		// ValidationErrors is a map[string]*FieldError
-		for _, val := range ve {
+		for _, val := range e {
 			errs = append(errs, newBindingError(val.Name, val.ActualTag))
 		}
-	} else if ute, ok := err.(*json.UnmarshalTypeError); ok {
-		// user sent wrong type
-		errs = append(errs, newBindingError(ute.Field, "type"))
-	} else {
+	case *json.UnmarshalTypeError:
+		// user sent wrong type for field
+		errs = append(errs, newBindingError(e.Field, "type"))
+	case *json.SyntaxError, *json.InvalidUTF8Error:
+		errs = append(errs, newBindingError("", "malformed json payload"))
+	default:
 		if err == io.EOF {
 			errs = append(errs, newBindingError("", "missing payload"))
 		} else {
